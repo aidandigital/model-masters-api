@@ -1,0 +1,65 @@
+/* Uses CSS instead of Tailwind so if a user has no wifi the loader will still be displayed, because thats the purpose of a loader */
+
+.cn {
+  display: table-cell;
+  width: 100vw;
+  height: 100vh;
+  background-color: #e7e7e7;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.ajax-loader {
+  display: inline-block;
+  transform: translateX(-50%);
+  width: 110px;
+  height: 110px;
+  border: 13px solid transparent;
+  animation: fadeIn 600ms, spinLoader 1s linear infinite;
+  border-radius: 50%;
+  border-top: 13px solid #a61c00;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes spinLoader {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/*
+.ajax-loader {
+  display: inline-block;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 120px;
+  border: 13px solid #f3f3f3;
+  animation: spinLoader 1s linear infinite;
+  border-radius: 50%;
+}
+
+@keyframes spinLoader {
+  0% {
+    border-top: 13px solid rgb(139, 1, 1);
+    transform: rotate(0deg);
+  }
+  50% {
+    border-top: 13px solid rgb(139, 1, 1);
+  }
+  100% {
+    transform: rotate(360deg);
+    border-top: 13px solid rgb(139, 1, 1);
+  }
+}
+*/
