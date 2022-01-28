@@ -16,6 +16,7 @@ const DB_STRING = process.env.DB_STRING;
 const SESSION_SECRET = process.env.SESSION_SECRET;
 
 // MIDDLEWARE
+app.use(express.static(path.resolve(__dirname, "./client/build")));
 app.use(helmet());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
