@@ -8,6 +8,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const cookieParser = require("cookie-parser");
 const passportLocal = require("passport-local").Strategy;
 const helmet = require("helmet");
+const path = require("path");
 require("dotenv").config();
 
 const app = express();
