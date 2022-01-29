@@ -4,18 +4,7 @@ const sharp = require("sharp");
 const { ObjectID } = require('mongodb');
 const bcrypt = require("bcrypt");
 const path = require("path");
-require("dotenv").config();
-const nodemailer = require('nodemailer');
-
-// Email
-
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_PASSWORD,
-  }
-});
+const transporter = require("../transporter");
 
 // Controllers
 const { userController, modelController } = require("../controllers/index.js");

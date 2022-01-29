@@ -1,6 +1,7 @@
 // Dependencies
 const bcrypt = require("bcrypt");
 const passport = require("passport");
+const transporter = require("../transporter");
 
 // Controllers
 const { userController } = require("../controllers/index.js");
