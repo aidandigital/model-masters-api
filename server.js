@@ -8,6 +8,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const cookieParser = require("cookie-parser");
 const passportLocal = require("passport-local").Strategy;
 const helmet = require("helmet");
+const cors = require("cors");
 const path = require("path");
 require("dotenv").config();
 
@@ -17,6 +18,10 @@ const DB_STRING = process.env.DB_STRING;
 const SESSION_SECRET = process.env.SESSION_SECRET;
 
 // MIDDLEWARE
+app.use(cors({
+  origin: 'https://model-masters.netlify.app',
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}));
 app.use(helmet());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
