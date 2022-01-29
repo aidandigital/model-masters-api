@@ -95,14 +95,16 @@ mongoose.connect(
 );
 
 // ROUTES
-app.get('/*', function (req, res) {
-  res.sendFile(path.join(__dirname, './client/build/index.html'));
-});
-
 require("./routes/authenticationRoutes")(app);
 require("./routes/apiRoutes")(app);
 require("./routes/htmlRoutes")(app);
 
+// Needs to come last so http requests not going to the backend will return the frontend
+app.get('/*', function (req, res) {
+  res.sendFile(path.join(__dirname, './client/build/index.html'));
+});
+
+/*
 app.post("/api/test", function (req, res, next) {
   upload(req, res, (err) => {
     if (err) {
@@ -114,5 +116,6 @@ app.post("/api/test", function (req, res, next) {
     }
   })
 });
+*/
 
 app.listen(PORT, () => console.log("Listening on PORT " + PORT));
