@@ -17,7 +17,6 @@ const DB_STRING = process.env.DB_STRING;
 const SESSION_SECRET = process.env.SESSION_SECRET;
 
 // MIDDLEWARE
-app.use(express.static(path.resolve(__dirname, "./client/build")));
 app.use(helmet());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -100,9 +99,12 @@ require("./routes/apiRoutes")(app);
 require("./routes/htmlRoutes")(app);
 
 // Needs to come last so http requests not going to the backend will return the frontend
+/*
 app.get('/*', function (req, res) {
+  console.log("sending frontend")
   res.sendFile(path.join(__dirname, './client/build/index.html'));
 });
+*/
 
 /*
 app.post("/api/test", function (req, res, next) {
