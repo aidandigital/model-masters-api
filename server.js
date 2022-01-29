@@ -19,7 +19,7 @@ const SESSION_SECRET = process.env.SESSION_SECRET;
 
 // MIDDLEWARE
 app.use(cors({
-  origin: 'https://model-masters.netlify.app',
+  origin: process.env.CLIENT_URL,
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }));
 app.use(helmet());
