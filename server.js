@@ -16,27 +16,29 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const DB_STRING = process.env.DB_STRING;
 const SESSION_SECRET = process.env.SESSION_SECRET;
+const CLIENT_URL = process.env.CLIENT_URL;
 
 // MIDDLEWARE
-app.set('trust proxy', 1)
 app.use(cors({
   origin: process.env.CLIENT_URL,
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }));
-// app.use(helmet());
+app.use(helmet());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser(SESSION_SECRET));
 app.use(mongoSanitize());
+app.enable('trust proxy');
 app.use(
   session({
     store: MongoStore.create({ mongoUrl: DB_STRING }),
-    name: "sqpowfnodkwsd",
-    secret: "dsklsdsklds",
+    name: "user",
+    secret: SESSION_SECRET,
     saveUninitialized: true,
     resave: false,
+    proxy: true,
     cookie: {
-      domain: 'model-masters.netlify.app',
+      domain: CLIENT_URL,
       maxAge: 1000 * 60 * 60 * 24 * 30,
       sameSite: "none",
       secure: true, // Required when sameSite is set to "none"
@@ -105,14 +107,6 @@ mongoose.connect(
 require("./routes/authenticationRoutes")(app);
 require("./routes/apiRoutes")(app);
 require("./routes/htmlRoutes")(app);
-
-// Needs to come last so http requests not going to the backend will return the frontend
-/*
-app.get('/*', function (req, res) {
-  console.log("sending frontend")
-  res.sendFile(path.join(__dirname, './client/build/index.html'));
-});
-*/
 
 /*
 app.post("/api/test", function (req, res, next) {
