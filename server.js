@@ -21,7 +21,8 @@ const CLIENT_URL = process.env.CLIENT_URL;
 // MIDDLEWARE
 app.use(cors({
   origin: process.env.CLIENT_URL,
-  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+  credentials: true,
 }));
 // app.use(helmet());
 app.use(express.urlencoded({ extended: true }));
@@ -41,7 +42,7 @@ app.use(
       // domain: CLIENT_URL,
       maxAge: 1000 * 60 * 60 * 24 * 30,
       sameSite: "none",
-      // secure: true, // Required when sameSite is set to "none"
+      secure: true, // Required when sameSite is set to "none"
       // httpOnly: true,
     },
   })
