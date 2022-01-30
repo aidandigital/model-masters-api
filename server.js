@@ -23,6 +23,7 @@ app.use(cors({
   origin: process.env.CLIENT_URL,
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
   credentials: true,
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept']
 }));
 // app.use(helmet());
 app.use(express.urlencoded({ extended: true }));
