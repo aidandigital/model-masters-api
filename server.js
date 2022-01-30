@@ -36,9 +36,10 @@ app.use(
     resave: false,
     cookie: {
       maxAge: 1000 * 60 * 60 * 24 * 30,
-      sameSite: "lax", // Some protection against CSRF by only sending the cookie when the request is from this website, but still allows users to click links to get to this site and send the cookie with it (prevents cross site requests).
+      sameSite: "none",
+      secure: true, // Required when sameSite is set to "none"
+      httpOnly: true,
     },
-    httpOnly: true,
   })
 );
 require("./passport-config")(passport); // Must come before initialize() and session()
