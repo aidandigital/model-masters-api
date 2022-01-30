@@ -44,7 +44,7 @@ app.use(
       maxAge: 1000 * 60 * 60 * 24 * 30,
       sameSite: "none",
       secure: true, // Required when sameSite is set to "none"
-      domain: 'model-masters.netlify.app'
+      domain: CLIENT_URL,
       // httpOnly: true,
     },
   })
