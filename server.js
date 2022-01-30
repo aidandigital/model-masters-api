@@ -26,7 +26,8 @@ app.use(helmet());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser(process.env.SESSION_SECRET));
-// app.use(mongoSanitize());
+app.use(mongoSanitize());
+app.set('trust proxy', 1)
 app.use(
   session({
     store: MongoStore.create({ mongoUrl: DB_STRING }),
