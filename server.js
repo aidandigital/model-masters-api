@@ -34,6 +34,7 @@ app.use(
     secret: SESSION_SECRET,
     saveUninitialized: true,
     resave: false,
+    proxy: true, // Required for Heroku
     cookie: {
       maxAge: 1000 * 60 * 60 * 24 * 30,
       sameSite: "none",
