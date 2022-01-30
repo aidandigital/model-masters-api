@@ -23,7 +23,7 @@ app.use(cors({
   origin: process.env.CLIENT_URL,
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }));
-app.use(helmet());
+// app.use(helmet());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser(SESSION_SECRET));
@@ -38,7 +38,7 @@ app.use(
     resave: false,
     proxy: true,
     cookie: {
-      domain: CLIENT_URL,
+      // domain: CLIENT_URL,
       maxAge: 1000 * 60 * 60 * 24 * 30,
       sameSite: "none",
       secure: true, // Required when sameSite is set to "none"
