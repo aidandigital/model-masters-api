@@ -41,7 +41,7 @@ app.use(
       maxAge: 1000 * 60 * 60 * 24 * 30,
       sameSite: "none",
       secure: true, // Required when sameSite is set to "none"
-      httpOnly: true,
+      // httpOnly: true,
     },
   })
 );
