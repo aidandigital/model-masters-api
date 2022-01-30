@@ -18,6 +18,7 @@ const DB_STRING = process.env.DB_STRING;
 const SESSION_SECRET = process.env.SESSION_SECRET;
 
 // MIDDLEWARE
+app.set('trust proxy', 1)
 app.use(cors({
   origin: process.env.CLIENT_URL,
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
@@ -27,11 +28,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser(SESSION_SECRET));
 app.use(mongoSanitize());
-app.set('trust proxy', 1)
 app.use(
   session({
     store: MongoStore.create({ mongoUrl: DB_STRING }),
-    name: "user",
+    name: "sqpowfnodkwsd",
     secret: SESSION_SECRET,
     saveUninitialized: true,
     resave: false,
