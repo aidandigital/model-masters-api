@@ -32,10 +32,9 @@ app.use(
   session({
     store: MongoStore.create({ mongoUrl: DB_STRING }),
     name: "sqpowfnodkwsd",
-    secret: SESSION_SECRET,
+    secret: "dsklsdsklds",
     saveUninitialized: true,
     resave: false,
-    proxy: true, // Required for Heroku
     cookie: {
       domain: 'model-masters.netlify.app',
       maxAge: 1000 * 60 * 60 * 24 * 30,
