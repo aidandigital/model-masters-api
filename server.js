@@ -25,7 +25,7 @@ app.use(cors({
 app.use(helmet());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(cookieParser(process.env.SESSION_SECRET));
+app.use(cookieParser(SESSION_SECRET));
 app.use(mongoSanitize());
 app.set('trust proxy', 1)
 app.use(
@@ -37,6 +37,7 @@ app.use(
     resave: false,
     proxy: true, // Required for Heroku
     cookie: {
+      domain: '.model-masters.netlify.app',
       maxAge: 1000 * 60 * 60 * 24 * 30,
       sameSite: "none",
       secure: true, // Required when sameSite is set to "none"
