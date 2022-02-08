@@ -44,7 +44,7 @@ app.use(
       maxAge: 1000 * 60 * 60 * 24 * 30,
       sameSite: "none",
       secure: true, // Required when sameSite is set to "none"
-      // httpOnly: true,
+      // DO NOT set a domain attribute, this will not work for netlify
     },
   })
 );
