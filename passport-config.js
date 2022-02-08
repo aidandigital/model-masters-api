@@ -8,10 +8,8 @@ const { userController } = require("./controllers/index.js");
 
 module.exports = function (passport) {
   async function authenticate(email, password, done) {
-    console.log(password, email)
     const cleanEmail = validateEmailForLogin(email);
     const cleanPassword = validatePasswordForLogin(password);
-    console.log(cleanPassword, cleanEmail);
     if (cleanEmail && cleanPassword) {
       const user = await userController.getUserByEmail(cleanEmail);
       if (user) {
@@ -52,13 +50,12 @@ module.exports = function (passport) {
 /*
 module.exports = function initialize(passport, getUserByEmail) {
   async function authenticateUser(email, password, done) {
-    console.log("Authenticater: " + email + " : " + password);
+    console.log("Authenticater: " + email);
     try {
       const user = await getUserByEmail(email);
       if (user.length === 1) {
         try {
           password = sanitizePassword(password);
-          console.log(password);
           if (await bcrypt.compare(password, user.password)) {
             return done(null, user);
           } else {
