@@ -1,9 +1,9 @@
 // Dependencies
 const fs = require("fs");
-const sharp = require("sharp");
 const { ObjectID } = require('mongodb');
 const bcrypt = require("bcrypt");
 const path = require("path");
+require("dotenv").config();
 const transporter = require("../transporter");
 
 // Controllers

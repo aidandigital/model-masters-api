@@ -6,10 +6,8 @@ const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const mongoSanitize = require('express-mongo-sanitize');
 const cookieParser = require("cookie-parser");
-const passportLocal = require("passport-local").Strategy;
 const helmet = require("helmet");
 const cors = require("cors");
-const path = require("path");
 require("dotenv").config();
 
 const app = express();
@@ -20,12 +18,12 @@ const CLIENT_URL = process.env.CLIENT_URL;
 
 // MIDDLEWARE
 app.use(cors({
-  origin: process.env.CLIENT_URL,
+  origin: CLIENT_URL,
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
   credentials: true,
   allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept']
 }));
-// app.use(helmet());
+app.use(helmet());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser(SESSION_SECRET));
