@@ -180,7 +180,8 @@ module.exports = function (app) {
               } else {
                 throw "couldn't add model to DB";
               }
-            } catch {
+            } catch(err) {
+              console.log(err)
                 console.log("Error adding model")
                 res.status(500).end();
             }
