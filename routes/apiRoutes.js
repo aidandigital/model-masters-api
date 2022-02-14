@@ -254,7 +254,7 @@ module.exports = function (app) {
         const date = new Date()
         var mailOptions = {
           from: process.env.GMAIL_USER,
-          to: process.env.RECEIVER_EMAIL,
+          to: process.env.GMAIL_RECEIVER,
           subject: 'An Issue was Reported for Model Masters',
           text: `
           Reporter: ${req.user.fullName} (ID: ${req.user._id}, IP: ${req.userIP})

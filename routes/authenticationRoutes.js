@@ -113,7 +113,7 @@ module.exports = function (app) {
                 const date = new Date()
                 var mailOptions = {
                   from: process.env.GMAIL_USER,
-                  to: process.env.RECEIVER_EMAIL,
+                  to: process.env.GMAIL_RECEIVER,
                   subject: 'A new user registered for Model Masters',
                   text: `User registered on ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
                 };
