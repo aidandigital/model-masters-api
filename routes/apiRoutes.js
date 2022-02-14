@@ -14,7 +14,7 @@ const { errorRes } = require("../formattedResponses");
 const { validateId, validateOptions, validateEmail, validateParagraph, validateText, validateTags, validateNumber, validatePasswordForLogin } = require("../validators");
 
 // Middleware & Image Functionality
-const {multerUpload, moveImagesToLiveDir, moveDirsToFolder, compressJpeg} = require("../images"); 
+const {multerUpload, cloudinaryUpload, clearCloudinaryFolder} = require("../images"); 
 
 module.exports = function (app) {
   app.post("/api/changeUserRole/", async (req, res) => {
@@ -31,18 +31,7 @@ module.exports = function (app) {
       try {
         if (cleanType === "setPending") {
           const result = await userController.changeUserPending(cleanId);
-          const modelIds = await userController.getUserModelIds(cleanId);
-          if (result === "approved") {
-            let success = moveDirsToFolder(modelIds, "invalidUser", "live");
-            if (!success) {
-              throw "error";
-            }
-            res.json({success: true, message: "Successfully approved user"})
-          } else if (result === "disapproved") {
-            let success = moveDirsToFolder(modelIds, "live", "invalidUser");
-            if (!success) {
-              throw "error";
-            }
+          if (result === "approved" || result === "disapproved") {
             res.json({success: true, message: "Successfully disapproved user"})
           } else {
             // User not found
@@ -54,21 +43,6 @@ module.exports = function (app) {
           }
         } else {
           const message = await userController.changeUserRole(cleanId, cleanType);
-          const updatedUser = await userController.getUserById(cleanId);
-          const modelIds = await userController.getUserModelIds(cleanId);
-          // If demoted to fan, make model images non-accessible
-          if (updatedUser.role === "fan" && cleanType === "demote") {
-            let success = moveDirsToFolder(modelIds, "live", "invalidUser");
-            if (!success) {
-              throw "error";
-            }
-          // If promoted to member, do the opposite
-          } else if (updatedUser.role === "member" && cleanType === "promote") {
-            let success = moveDirsToFolder(modelIds, "invalidUser", "live");
-            if (!success) {
-              throw "error";
-            }
-          }
           res.json({
             success: !message.includes("Cannot"), // Guess if error or not based on message. I know, it's not ideal
             errType: message.includes("Cannot") ? "general" : null,
@@ -160,10 +134,6 @@ module.exports = function (app) {
           // Ensure no image upload error before validating other fields, otherwise there will be no req.body
           // At this point images have entered the file system
           const maxYear = new Date().getFullYear();
-          let imageNames = [];
-            req.files.forEach((file) => {
-              imageNames.push(file.filename)
-          })
 
           clean = {
             name: validateText(name, "name", errors, 30),
@@ -177,9 +147,10 @@ module.exports = function (app) {
               errors
             ),
             completionYear: validateNumber(completionYear, 1940, maxYear, "completionYear", errors),
-            images: imageNames,
+            images: null,
             facts: validateParagraph(facts, "facts", errors, required = false).split("\n"),
             user: user_id,
+            _id: null,
           }
 
           if (Object.keys(errors).length !== 0) {
@@ -187,33 +158,29 @@ module.exports = function (app) {
 
             // If validation error(s), delete images from "uploaded" file:
             imageNames.forEach((image) => {
-              fs.unlink(path.join(__dirname, `../fsData/uploaded/${image}`), () => {})
+              fs.unlink(path.join(__dirname, `../uploadedImgs/${image}`), () => {})
             })
           } else {
             try {
               const modelId = await new ObjectID();
               clean._id = modelId;
+              livePaths = [];
 
-              await moveImagesToLiveDir(imageNames, modelId)
+              for (const file of req.files) {
+                const livePath = await cloudinaryUpload(file.path, modelId, `user_id=${user_id}|model_type=${clean.type}`);
+                livePaths.push(livePath);
+              }
+
+              clean.images = livePaths;
 
               let createdModel_id = await modelController.addModel(clean, user_id);
   
               if (createdModel_id) {
                 res.json({success: true, model_id: modelId})
               } else {
-                // If couldn't add model to DB, delete it's image directory
-                await fs.rmdir(path.join(__dirname, '../fsData/live/' + modelId), { recursive: true }, (err) => {});
                 throw "couldn't add model to DB";
               }
-
-              imageNames.forEach((image) => {
-                // Compress JPEG's
-                if (["jpeg", "jpg"].includes(image.split(".")[1])) {
-                  compressJpeg("./fsData/live/" + modelId + "/" + image);
-                }
-              });
-            } catch(err) {
-                console.log(err)
+            } catch {
                 console.log("Error adding model")
                 res.status(500).end();
             }
@@ -248,16 +215,14 @@ module.exports = function (app) {
           incorrectPassword();
         } else {
           // Now we know this user is the owner of the model or they are an admin
-          // Checl if they got their password correct
+          // Check if they got their password correct
           bcrypt.compare(cleanPassword, req.user.password, async (err, authorized) => {
             if (err) throw err;
             if (authorized) {
-              await fs.rmdir(path.join(__dirname, '../fsData/live/' + model._id), { recursive: true }, (err) => {
-                if (err) throw err;
-              });
               await modelController.deleteModelById(cleanId);
               await userController.removeModelIdFromUser(model.user._id, cleanId)
-              res.json({success: true})
+              res.json({success: true}) 
+              clearCloudinaryFolder(cleanId);
             } else {
               incorrectPassword()
             }
@@ -312,32 +277,4 @@ module.exports = function (app) {
       }
     }
   })
-
-  /*
-  app.post("/api/test", function (req, res, next) {
-    upload(req, res, (err) => {
-      if (err) {
-        console.log(err)
-      } else {
-        console.log(req.file)
-        console.log(req.files)
-      }
-    })
-  });
-  */
-
-
-  /*
-  app.post("/api/testInjection", async (req, res) => {
-    console.log(req.body.email, req.body.password);
-    try {
-    const user = await userController.dangerouslyGetUser(req.body.email, req.body.password);
-    console.log(user);
-    res.json(user);
-    } catch {
-      console.log("an error occured")
-      res.json("an error occured")
-    }
-  })
-  */
 };

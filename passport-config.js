@@ -46,37 +46,3 @@ module.exports = function (passport) {
     return done(null, await userController.getUserById(_id));
   });
 };
-
-/*
-module.exports = function initialize(passport, getUserByEmail) {
-  async function authenticateUser(email, password, done) {
-    console.log("Authenticater: " + email);
-    try {
-      const user = await getUserByEmail(email);
-      if (user.length === 1) {
-        try {
-          password = sanitizePassword(password);
-          if (await bcrypt.compare(password, user.password)) {
-            return done(null, user);
-          } else {
-            return done(null, false, {
-              message: "Invalid email or password!",
-            });
-          }
-        } catch {
-          return done(null, false, { message: "internalErr" });
-        }
-      } else {
-        return done(null, false, { message: "Invalid email or password!!" });
-      }
-    } catch {
-      return done(null, false, { message: "internalErr" });
-    }
-  }
-
-  passport.use(new LocalStrategy({ usernameField: "email", passwordField: "password" }, authenticateUser));
-
-  passport.serializeUser((user, done) => {});
-  passport.deserializeUser((id, done) => {});
-};
-*/

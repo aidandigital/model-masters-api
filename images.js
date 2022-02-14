@@ -1,12 +1,13 @@
 const multer = require("multer");
 const uuid = require("uuid");
 const path = require("path");
-const fs = require("fs");
-const sharp = require("sharp")
+const cloudinary = require("cloudinary");
+const dotenv = require("dotenv");
+dotenv.config();
 
 const storage = multer.diskStorage({
   // Destination to store image
-  destination: "fsData/uploaded",
+  destination: "uploadedImgs",
   filename: (req, file, cb) => {
     cb(
       null,
@@ -15,6 +16,12 @@ const storage = multer.diskStorage({
     // file.fieldname is name of the field (image)
     // path.extname get the uploaded file extension
   },
+});
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 function checkFileType(req, file, cb) {
@@ -32,53 +39,37 @@ function checkFileType(req, file, cb) {
   }
 }
 
-// Moves new images in the "uploaded" folder to a custom dir within the "live" folder
-async function moveImagesToLiveDir(imageNamesArr, dirName) {
-    await fs.mkdir("./fsData/live/" + dirName, async (dir_err) => {
-      if (!dir_err) {
-        imageNamesArr.forEach(async (imageName) => {
-          const oldPath = "./fsData/uploaded/" + imageName;
-          const newPath = "./fsData/live/" + dirName + "/" + imageName;
-          await fs.rename(oldPath, newPath, (err) => {
-            if (err) {
-              throw err;
-            }
-          })
-        })
-      } else {
-        throw dir_err;
-      }
-    });
-}
-
-function moveDirsToFolder(parentIdsArr, oldFolder, newFolder) {
-  parentIdsArr.forEach((parent_id) => {
-    fs.rename("./fsData/" + oldFolder + "/" + parent_id, "./fsData/" + newFolder + "/" + parent_id, (err) => {
-      if (err) return false;
-    })
-  })
-  return true;
-}
-
-function compressJpeg(path) {
-  sharp(path).jpeg({
-    quality: 80,
-    chromaSubsampling: '4:4:4'
-  }).toBuffer((err, buffer) => {
-    // Must write file using buffer in order to be able to replace image in FS
-    if (err) {
-      console.log("Could not get buffer from " + path + " for compression");
-    } else {
-      fs.writeFile(path, buffer, () => {});
-    }
-});
-}
-
 var multerUpload = multer({ storage: storage, fileFilter: checkFileType });
+
+function cloudinaryUpload(file, parent_id, metadataStr) {
+  return new Promise((resolve, reject) => {
+      cloudinary.uploader.upload(file,
+          (result) => {
+          if (result.secure_url) {
+              resolve(result.secure_url)
+          } else {
+              reject("failed to upload image (cloudinary error)")
+          }
+      },
+      {
+          resource_type: "auto",
+          folder: process.env.CLOUDINARY_FOLDER + "/" + parent_id,
+          use_filename: true,
+          unique_filename: false,
+          metadata: metadataStr,
+          quality: "auto",
+      }
+    )
+  })
+}
+function clearCloudinaryFolder(folder = "parent-object-id") {
+  // Not promise based because we can't easily tell if this was successful
+  let fullFolder = process.env.CLOUDINARY_FOLDER + "/" + folder;
+  cloudinary.api.delete_resources_by_prefix(fullFolder + "/", () => {});
+}
 
 module.exports = {
   multerUpload,
-  moveImagesToLiveDir,
-  moveDirsToFolder,
-  compressJpeg,
+  cloudinaryUpload,
+  clearCloudinaryFolder,
 };

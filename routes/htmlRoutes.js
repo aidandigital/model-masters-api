@@ -5,19 +5,6 @@ const path = require("path")
 const fs = require("fs");
 
 module.exports = function (app) {
-  /*
-  app.get("/html/home", (req, res) => {
-    let data = null;
-    if (req.userPermissions > 2) {
-      data = {
-        name: req.user.name,
-        _id: req.user._id,
-      };
-    }
-    dataRes(res, req, req.userPermissions > 2, data);
-  });
-  */
-
   app.get("/html/users", async (req, res) => {
     let data = null;
     try {
@@ -149,36 +136,6 @@ module.exports = function (app) {
       dataRes(res, req, false, null)
     }
   })
-
-  app.get("/html/image/:id", (req, res) => {
-    const id = req.params.id;
-
-    function sendUknown() {
-      res.sendFile(path.join(__dirname, "../fsData/uknown.jpeg"));
-    }
-
-    if (typeof id !== "string") {
-      return sendUknown();
-    }
-
-    const idArr = id.split(".")
-    if (
-      req.userPermissions > 2 
-      && idArr.length === 3 // Can only have {parent_id}.{imageid}.{extension} (3 parts) to prevent user from accessing private files
-      && ["jpeg", "jpg", "png", "gif"].includes(idArr[2]) // Only types of file in the FS images folder
-    ) {
-      let imagePath = "../fsData/live/" + idArr[0] + "/" + idArr[1] + "." + idArr[2];
-      res.sendFile(path.join(__dirname, imagePath), (err) => {
-        if (err) {
-          console.log("Error sending image to frontend");
-          sendUknown()
-        }
-      });
-    } else {
-      sendUknown()
-    }
-
-  });
 
   app.get("/html/deleteModel/:model_id", (req, res) => {
     const model_id = req.params.model_id;
