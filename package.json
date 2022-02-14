@@ -29,7 +29,7 @@
     "nodemon": "^2.0.12",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
-    "sharp": "^0.29.3",
+    "cloudinary": "^1.28.1",
     "uuid": "^8.3.2"
   }
 }

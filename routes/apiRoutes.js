@@ -13,8 +13,8 @@ const { errorRes } = require("../formattedResponses");
 // Custom Validators
 const { validateId, validateOptions, validateEmail, validateParagraph, validateText, validateTags, validateNumber, validatePasswordForLogin } = require("../validators");
 
-// Middleware & Image Functionality
-const {multerUpload, cloudinaryUpload, clearCloudinaryFolder} = require("../images"); 
+// Middleware & Cloudinary
+const { multerUpload, cloudinaryUpload, clearCloudinaryFolder } = require("../images"); 
 
 module.exports = function (app) {
   app.post("/api/changeUserRole/", async (req, res) => {
