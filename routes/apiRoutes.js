@@ -157,8 +157,8 @@ module.exports = function (app) {
             errorRes(res, "validation", errors)
 
             // If validation error(s), delete images from "uploaded" file:
-            imageNames.forEach((image) => {
-              fs.unlink(path.join(__dirname, `../uploadedImgs/${image}`), () => {})
+            req.files.forEach((file) => {
+              fs.unlink(path.join(__dirname, `../uploadedImgs/${file.path}`), () => {})
             })
           } else {
             try {
