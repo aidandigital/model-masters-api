@@ -75,8 +75,8 @@ module.exports = {
             type: 1,
             thumbnail: 1,
             user: {
-                firstName: 1,
-                _id: 1,
+              name: "$user.firstName",
+              _id: 1,
             }
         }
     }
