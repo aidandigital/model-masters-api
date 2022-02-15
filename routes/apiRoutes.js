@@ -32,7 +32,7 @@ module.exports = function (app) {
         if (cleanType === "setPending") {
           const result = await userController.changeUserPending(cleanId);
           if (result === "approved" || result === "disapproved") {
-            res.json({success: true, message: "Successfully disapproved user"})
+            res.json({success: true, message: "Success"})
           } else {
             // User not found
             res.json({
