@@ -112,7 +112,7 @@ module.exports = function (app) {
       errorRes(res, "general", errors = {general: "Your account status has changed, please refresh this page."})
     } else {
       // Must use image upload function in this way to enforce max images limit:
-      let modelImageUpload = multerUpload.array("images", 8);
+      let modelImageUpload = multerUpload.array("images", 10);
       modelImageUpload(req, res, async (imageErr) => {
         const user_id = req.user._id;
 

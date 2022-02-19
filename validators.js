@@ -59,8 +59,8 @@ module.exports = {
     if (text.length > 1000) {
       message = "This field is too long";
     }
-    if (text.length < 30 && required) {
-      message = "Enter at least 30 characters";
+    if (text.length < 20 && required) {
+      message = "Enter at least 20 characters";
     }
     if (!text && required) {
       message = "This field is required";
