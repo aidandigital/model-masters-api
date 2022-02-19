@@ -209,7 +209,7 @@ module.exports = function (app) {
         let model = await modelController.getModelById(cleanId)
         if (!model) {
           // If model not found, return DNE
-          errorRes(res, "general", errors = {model_id: "This model doesn't exist"})
+          errorRes(res, "general", errors = {general: "This model doesn't exist"})
         } else if (!cleanPassword || ( String(model.user._id) !== String(req.user._id) && req.userPermissions !== 6 )) {
           // If no clean password or user isn't the owner of the model (and not admin):
           incorrectPassword();
