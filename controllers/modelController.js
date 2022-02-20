@@ -27,6 +27,7 @@ module.exports = {
   deleteModelById: (_id) => db.Model.findByIdAndDelete(_id),
 
   getModels: () => db.Model.aggregate([
+    { $sort: { creationDate: -1 } }, // Send newest models first
     {
         $project: {
             _id: { $toObjectId: "$_id" }, // Must convert to object id for comparison below
