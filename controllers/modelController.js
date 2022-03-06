@@ -19,7 +19,6 @@ module.exports = {
       let model = await db.Model.findById(_id).populate("user");
       return model;
     } catch {
-      console.log("Could not find model in DB");
       return false;
     }
   },
