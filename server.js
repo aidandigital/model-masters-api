@@ -39,6 +39,7 @@ app.use(
     proxy: true,
     cookie: {
       // domain: CLIENT_URL,
+      httpOnly: true, // Cannot be accessed by frontend JS, only via HTTP
       maxAge: 1000 * 60 * 60 * 24 * 30,
       sameSite: "none",
       secure: true, // Required when sameSite is set to "none"
