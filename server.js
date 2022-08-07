@@ -11,6 +11,8 @@ const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
+
+// ENV VARS
 const PORT = process.env.PORT || 3001;
 const DB_STRING = process.env.DB_STRING;
 const SESSION_SECRET = process.env.SESSION_SECRET;
@@ -39,11 +41,9 @@ app.use(
     proxy: true,
     cookie: {
       // domain: CLIENT_URL,
+      // ^ DO NOT set a domain attribute, this will not work for netlify
       httpOnly: true, // Cannot be accessed by frontend JS, only via HTTP
-      maxAge: 1000 * 60 * 60 * 24 * 30,
-      sameSite: "none",
-      secure: true, // Required when sameSite is set to "none"
-      // DO NOT set a domain attribute, this will not work for netlify
+      maxAge: 1000 * 60 * 60 * 24 * 30
     },
   })
 );
@@ -109,18 +109,30 @@ require("./routes/authenticationRoutes")(app);
 require("./routes/apiRoutes")(app);
 require("./routes/htmlRoutes")(app);
 
-/*
-app.post("/api/test", function (req, res, next) {
-  upload(req, res, (err) => {
-    if (err) {
-      console.log(err)
-    } else {
-      res.end("File is uploaded")
-      console.log(req.file)
-      console.log(req.files)
-    }
-  })
-});
-*/
-
 app.listen(PORT, () => console.log("Listening on PORT " + PORT));
+
+/*
+// Cookie settings for cross-site cookies:
+cookie: {
+    // domain: CLIENT_URL,
+    httpOnly: true, // Cannot be accessed by frontend JS, only via HTTP
+    maxAge: 1000 * 60 * 60 * 24 * 30,
+    sameSite: "none",
+    secure: true, // Required when sameSite is set to "none"
+    // DO NOT set a domain attribute, this will not work for netlify
+},
+
+// Listening settings for TLS in dev environment (localhost):
+if (process.env.NODE_ENV === "development") {
+  const privateKey = fs.readFileSync( './certs/localhost-key.pem' );
+  const certificate = fs.readFileSync( './certs/localhost.pem' );
+
+  https.createServer({
+    key: privateKey,
+    cert: certificate
+  }, app).listen(443, () => console.log("Listening on PORT " + 443)); 
+  // ^ Must listen on port 443 in order to use TLS
+} else {
+  app.listen(PORT, () => console.log("Listening on PORT " + PORT));
+}
+*/
