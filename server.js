@@ -6,9 +6,9 @@ const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const mongoSanitize = require('express-mongo-sanitize');
 const cookieParser = require("cookie-parser");
-const helmet = require("helmet");
+// const helmet = require("helmet");
 const cors = require("cors");
-const http = require("http");
+const https = require("https");
 require("dotenv").config();
 
 const app = express();
@@ -26,7 +26,7 @@ app.use(cors({
   credentials: true,
   allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept']
 }));
-app.use(helmet());
+// app.use(helmet());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser(SESSION_SECRET));
@@ -111,7 +111,7 @@ require("./routes/apiRoutes")(app);
 require("./routes/htmlRoutes")(app);
 
 if (process.env.NODE_ENV === "production") {
-  http.createServer({
+  https.createServer({
     key: process.env.TLS_KEY,
     cert: process.env.TLS_CERT,
   }, app).listen(PORT, () => console.log("Listening on PORT " + PORT)); 
