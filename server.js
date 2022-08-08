@@ -9,13 +9,12 @@ const cookieParser = require("cookie-parser");
 // const helmet = require("helmet");
 const cors = require("cors");
 const https = require("https");
-const crypto = require("crypto");
-const fs = require("fs");
 require("dotenv").config();
 
 const app = express();
 
 // ENV VARS
+const NODE_ENV = process.env.NODE_ENV;
 const PORT = process.env.PORT || 3001;
 const DB_STRING = process.env.DB_STRING;
 const SESSION_SECRET = process.env.SESSION_SECRET;
@@ -114,9 +113,9 @@ require("./routes/authenticationRoutes")(app);
 require("./routes/apiRoutes")(app);
 require("./routes/htmlRoutes")(app);
 
-if (process.env.NODE_ENV === "production") {
-  const originalPublicKey = process.env.TLS_CERT.replace(/\\n/g, "\n");
-  const originalPrivateKey = process.env.TLS_KEY.replace(/\\n/g, "\n");
+if (NODE_ENV === "production") {
+  const originalPublicKey = TLS_CERT.replace(/\\n/g, "\n");
+  const originalPrivateKey = TLS_KEY.replace(/\\n/g, "\n");
 
   https.createServer({
     cert: originalPublicKey,
