@@ -8,6 +8,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const cookieParser = require("cookie-parser");
 const helmet = require("helmet");
 const cors = require("cors");
+const http = require("http");
 require("dotenv").config();
 
 const app = express();
@@ -110,7 +111,7 @@ require("./routes/apiRoutes")(app);
 require("./routes/htmlRoutes")(app);
 
 if (process.env.NODE_ENV === "production") {
-  https.createServer({
+  http.createServer({
     key: process.env.TLS_KEY,
     cert: process.env.TLS_CERT,
   }, app).listen(443, () => console.log("Listening on PORT " + 443)); 
