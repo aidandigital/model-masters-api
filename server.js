@@ -109,7 +109,14 @@ require("./routes/authenticationRoutes")(app);
 require("./routes/apiRoutes")(app);
 require("./routes/htmlRoutes")(app);
 
-app.listen(PORT, () => console.log("Listening on PORT " + PORT));
+if (process.env.NODE_ENV === "production") {
+  https.createServer({
+    key: process.env.TLS_KEY,
+    cert: process.env.TLS_CERT,
+  }, app).listen(443, () => console.log("Listening on PORT " + 443)); 
+} else {
+  app.listen(PORT, () => console.log("Listening on PORT " + PORT));
+}
 
 /*
 // Cookie settings for cross-site cookies:
