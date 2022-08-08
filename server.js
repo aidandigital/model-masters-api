@@ -9,6 +9,8 @@ const cookieParser = require("cookie-parser");
 // const helmet = require("helmet");
 const cors = require("cors");
 const https = require("https");
+const crypto = require("crypto");
+const fs = require("fs");
 require("dotenv").config();
 
 const app = express();
@@ -18,6 +20,8 @@ const PORT = process.env.PORT || 3001;
 const DB_STRING = process.env.DB_STRING;
 const SESSION_SECRET = process.env.SESSION_SECRET;
 const CLIENT_URL = process.env.CLIENT_URL;
+const TLS_CERT = process.env.TLS_CERT;
+const TLS_KEY = process.env.TLS_KEY;
 
 // MIDDLEWARE
 app.use(cors({
@@ -111,36 +115,14 @@ require("./routes/apiRoutes")(app);
 require("./routes/htmlRoutes")(app);
 
 if (process.env.NODE_ENV === "production") {
+  const originalPublicKey = process.env.TLS_CERT.replace(/\\n/g, "\n");
+  const originalPrivateKey = process.env.TLS_KEY.replace(/\\n/g, "\n");
+
   https.createServer({
-    key: process.env.TLS_KEY,
-    cert: process.env.TLS_CERT,
+    cert: originalPublicKey,
+    key: originalPrivateKey,
   }, app).listen(PORT, () => console.log("Listening on PORT " + PORT)); 
+
 } else {
   app.listen(PORT, () => console.log("Listening on PORT " + PORT));
 }
-
-/*
-// Cookie settings for cross-site cookies:
-cookie: {
-    // domain: CLIENT_URL,
-    httpOnly: true, // Cannot be accessed by frontend JS, only via HTTP
-    maxAge: 1000 * 60 * 60 * 24 * 30,
-    sameSite: "none",
-    secure: true, // Required when sameSite is set to "none"
-    // DO NOT set a domain attribute, this will not work for netlify
-},
-
-// Listening settings for TLS in dev environment (localhost):
-if (process.env.NODE_ENV === "development") {
-  const privateKey = fs.readFileSync( './certs/localhost-key.pem' );
-  const certificate = fs.readFileSync( './certs/localhost.pem' );
-
-  https.createServer({
-    key: privateKey,
-    cert: certificate
-  }, app).listen(443, () => console.log("Listening on PORT " + 443)); 
-  // ^ Must listen on port 443 in order to use TLS
-} else {
-  app.listen(PORT, () => console.log("Listening on PORT " + PORT));
-}
-*/
