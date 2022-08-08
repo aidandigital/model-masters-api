@@ -121,7 +121,7 @@ if (process.env.NODE_ENV === "production") {
   https.createServer({
     cert: originalPublicKey,
     key: originalPrivateKey,
-  }, app).listen(PORT, () => console.log("Listening on PORT " + PORT)); 
+  }, app).listen(PORT, () => console.log("Listening on PORT (with TLS) " + PORT)); 
 
 } else {
   app.listen(PORT, () => console.log("Listening on PORT " + PORT));
