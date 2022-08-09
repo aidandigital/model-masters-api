@@ -6,7 +6,7 @@ const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const mongoSanitize = require('express-mongo-sanitize');
 const cookieParser = require("cookie-parser");
-// const helmet = require("helmet");
+const helmet = require("helmet");
 const cors = require("cors");
 require("dotenv").config();
 
@@ -26,7 +26,7 @@ app.use(cors({
   credentials: true,
   allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept']
 }));
-// app.use(helmet());
+app.use(helmet());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser(SESSION_SECRET));
