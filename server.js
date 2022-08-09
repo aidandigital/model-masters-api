@@ -8,19 +8,16 @@ const mongoSanitize = require('express-mongo-sanitize');
 const cookieParser = require("cookie-parser");
 // const helmet = require("helmet");
 const cors = require("cors");
-const https = require("https");
 require("dotenv").config();
 
 const app = express();
 
 // ENV VARS
-const NODE_ENV = process.env.NODE_ENV;
+// const NODE_ENV = process.env.NODE_ENV;
 const PORT = process.env.PORT || 3001;
 const DB_STRING = process.env.DB_STRING;
 const SESSION_SECRET = process.env.SESSION_SECRET;
 const CLIENT_URL = process.env.CLIENT_URL;
-const TLS_CERT = process.env.TLS_CERT;
-const TLS_KEY = process.env.TLS_KEY;
 
 // MIDDLEWARE
 app.use(cors({
@@ -113,15 +110,4 @@ require("./routes/authenticationRoutes")(app);
 require("./routes/apiRoutes")(app);
 require("./routes/htmlRoutes")(app);
 
-if (NODE_ENV === "production") {
-  const originalPublicKey = TLS_CERT.replace(/\\n/g, "\n");
-  const originalPrivateKey = TLS_KEY.replace(/\\n/g, "\n");
-
-  https.createServer({
-    cert: originalPublicKey,
-    key: originalPrivateKey,
-  }, app).listen(PORT, () => console.log("Listening on PORT (with TLS) " + PORT)); 
-
-} else {
-  app.listen(PORT, () => console.log("Listening on PORT " + PORT));
-}
+app.listen(PORT, () => console.log("Listening on PORT " + PORT));
