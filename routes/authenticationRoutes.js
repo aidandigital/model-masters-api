@@ -68,14 +68,13 @@ module.exports = function (app) {
         "You are already logged in. Log out first to make a new account"
       );
     } else {
-      const { name, email, role, password } = req.body; // Raw data
+      const { name, email, password } = req.body; // Raw data
       let errors = {};
       // Ensure fields are filled out correctly and contain only appropriate characters:
       let clean = {
         fullName: validateText(name, "name", errors),
         firstName: null,
         email: validateEmail(email, "email", errors),
-        role: validateOptions(role, ["fan", "member"], "role", errors),
         password: validatePassword(password, "password", errors, "register"),
         ips: [req.userIP],
       };
@@ -83,7 +82,7 @@ module.exports = function (app) {
         // If there are validation errors send them back:
         errorRes(res, "validation", errors);
       } else {
-        // Check email availablility if no validation errors:
+        // Check email availability if no validation errors:
         try {
           emailAvailable = await userController.checkEmailAvailability(
             clean.email

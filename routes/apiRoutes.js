@@ -79,7 +79,7 @@ module.exports = function (app) {
         fullName: validateText(name, "name", errors),
         firstName: null,
         email: validateEmail(email, "email", errors),
-        bio: validateParagraph(bio, "bio", errors),
+        bio: validateParagraph(bio, "bio", errors, false),
         types: validateTags(types, ["Cars", "Tanks", "Trains", "Ships", "Trucks"], "types", errors),
         complete: true,
       };

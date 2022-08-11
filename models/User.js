@@ -21,7 +21,7 @@ const User = new Schema({
   },
   role: {
     type: String,
-    required: true,
+    default: "fan",
   },
   password: {
     type: String,
@@ -34,7 +34,7 @@ const User = new Schema({
   ],
   pending: {
     type: Boolean,
-    default: true,
+    default: false,
   },
   complete: {
     type: Boolean,
