@@ -83,7 +83,7 @@ module.exports = function (app) {
   });
 
   app.get("/html/addModel", async (req, res) => {
-    if (req.userPermissions > 3) {
+    if (req.userPermissions > 2) {
       dataRes(res, req, true, {})
     } else {
       dataRes(res, req, false, null)

@@ -276,5 +276,34 @@ module.exports = function (app) {
         });
       }
     }
+  });
+  
+  app.post("/api/requestVerification", (req, res) => {
+    if (req.userPermissions === 0) { // If logged out
+      errorRes(res, "notloggedin")
+    } else if (req.userPermissions < 3) { // // If demoted below "fan" status
+      errorRes(res, "general", errors = {general: "Your account status has changed, please refresh this page."})
+    } else {
+      const date = new Date()
+      var mailOptions = {
+        from: process.env.GMAIL_USER,
+        to: process.env.GMAIL_RECEIVER,
+        subject: 'A User requested Verification for Model Masters',
+        text: `
+        Requester: ${req.user.fullName} (ID: ${req.user._id}, IP: ${req.userIP})
+
+        Requested on ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}
+        `
+      };
+      
+      transporter.sendMail(mailOptions, function(err, info){
+        if (err) {     
+          console.log("Failed to email verification request");
+          res.status(500).end()
+        } else {
+          res.json({success: true})
+        }
+      });
+    }
   })
 };

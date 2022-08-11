@@ -122,22 +122,25 @@ module.exports = userController = {
 
   getUserModels: async (_id) => {
     try {
-      let result = await db.User.findOne({
+      const user = await db.User.findOne({
         _id: _id,
         pending: false,
         role: {
           $ne: "fan"
         }
-      }).populate("models");
-      let models = [];
-      result.models.forEach((model) => {
-        let { name, _id, images, type } = model;
-        models.push({name, _id, thumbnail: images[0], type});
-      });
-      return models;
+      })
+      if (user) {
+        const result = user.populate("models");
+        let models = [];
+        result.models.forEach((model) => {
+          let { name, _id, images, type } = model;
+          models.push({name, _id, thumbnail: images[0], type});
+        });
+        return models;
+      }
     } catch {
       console.log("Could not find user's models in DB")
-      return null;
     }
+    return null;
   },
 };

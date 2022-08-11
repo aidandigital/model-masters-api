@@ -1,5 +1,5 @@
 module.exports = {
-  errorRes: (res, errType, message = "An error occured") => {
+  errorRes: (res, errType, message = "An error occurred") => {
     // For API/submission errors
     // For validation errors, "error" is an object of errors
     let response = {
