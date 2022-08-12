@@ -70,7 +70,7 @@ module.exports = function (app) {
   app.post("/api/updateAccount", async (req, res) => {
     if (req.userPermissions === 0) { // If logged out
       errorRes(res, "notloggedin")
-    } else if (req.userPermissions < 2) { // If demoted back to pending
+    } else if (req.userPermissions < 2 || req.user.guest) { // If demoted back to pending
       errorRes(res, "validation", errors = {general: "Your account status has changed, please refresh this page."})
     } else {
       let {name, email, types, bio } = req.body;
@@ -281,7 +281,7 @@ module.exports = function (app) {
   app.post("/api/requestVerification", (req, res) => {
     if (req.userPermissions === 0) { // If logged out
       errorRes(res, "notloggedin")
-    } else if (req.userPermissions < 3) { // // If demoted below "fan" status
+    } else if (req.userPermissions < 3 || req.user.guest) { // // If demoted below "fan" status
       errorRes(res, "general", errors = {general: "Your account status has changed, please refresh this page."})
     } else {
       const date = new Date()

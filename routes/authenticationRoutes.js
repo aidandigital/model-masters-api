@@ -2,6 +2,9 @@
 const bcrypt = require("bcrypt");
 const passport = require("passport");
 const transporter = require("../transporter");
+require("dotenv").config();
+
+const GUEST_ID = process.env.GUEST_ID;
 
 // Controllers
 const { userController } = require("../controllers/index.js");
@@ -145,6 +148,30 @@ module.exports = function (app) {
     } catch { 
       res.status(500).end();
       console.log("Couldn't log out user")
+    }
+  });
+
+  app.post("/api/loginAsGuest", (req, res) => {
+    if (req.user) {
+      // No signing up if logged in already
+      return errorRes(
+        res,
+        "authorization",
+        "You are already logged in. Log out first to make a new account"
+      );
+    } else {
+      const guest = {
+        _id: GUEST_ID
+      };
+      req.login(guest, function (err) {
+        if (err) {
+          console.log("Couldn't log in user as guest")
+          return res.status(500).end();
+        }
+        res.json({
+          success: true,
+        });
+      })
     }
   });
 };

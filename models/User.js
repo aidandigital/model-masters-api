@@ -40,6 +40,9 @@ const User = new Schema({
     type: Boolean,
     default: false,
   },
+  guest: {
+    type: String,
+  },
   creationDate: {
     type: Date,
     default: Date.now,
