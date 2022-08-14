@@ -83,7 +83,7 @@ module.exports = function (app) {
   });
 
   app.get("/html/addModel", async (req, res) => {
-    if (req.userPermissions > 2 && !req.user.guest) {
+    if (req.userPermissions > 2) {
       dataRes(res, req, true, {})
     } else {
       dataRes(res, req, false, null)
@@ -151,8 +151,13 @@ module.exports = function (app) {
 
   app.get("/html/models", async (req, res) => {
     if (req.userPermissions > 2) {
-      data = await modelController.getModels();
-      dataRes(res, req, true, data);
+      try {
+        const data = await modelController.getModels();
+        dataRes(res, req, true, data);
+      } catch {
+        console.log("Could not get all models from DB")
+        res.status(500).end();
+      }
     } else {
       dataRes(res, req, false, null);
     }

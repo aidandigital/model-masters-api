@@ -22,6 +22,7 @@ module.exports = {
           _id: req.user._id,
           fullName: req.user.fullName,
           firstName: req.user.firstName,
+          guest: req.user.guest ? req.user.guest : false,
         },
         authorized: true,
         found: found,
