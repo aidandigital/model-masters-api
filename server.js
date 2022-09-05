@@ -55,7 +55,6 @@ app.use(passport.session());
 app.use((req, res, next) => {
   req.userIP =
     req.headers["x-forwarded-for"] || req.socket.remoteAddress || null;
-  // Additional ip related security protocols could go here
   next();
 });
 // User Permissions Scale, add to Request:
