@@ -1,7 +1,0 @@
-Model Masters was originally a google site for sharing model cars the cousins made, as an alternative to sending them via a groupchat. 
-Although the original site served it's purpose well, it was drag and drop and only had the capabilities of a power point presentation. 
-This made adding new models a whole process because the entire site had to be manually updated. 
-After I (Aidan) completed my software development camp, I realized I had the ability to transform Model Masters into a professional application where automation would make the site much more user friendly. 
-My motivation for completing the project was not to create a better Model Masters, but rather to gain more experience and practice my skills.
-Model Masters was coded from scratch, not using a website builder or Wordpress, but rather the same modern frameworks that power Facebook, Netflix, AirBnb, and more. 
-Behind the scenes, the site is compromised of around 70 files and over 3,000 lines of code in multiple languages.
