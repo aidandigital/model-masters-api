@@ -167,7 +167,7 @@ module.exports = {
 
     let message;
     if (password.length < 9 || !password.match(passwordCheck)) {
-      message = "Passwords must be at least 9 characters long and contain an upper/lowercase letter and number";
+      message = "Passwords must be at least 9 characters long, contain an upper/lowercase letter, and a number";
     }
     if (password.length > maxPasswordLength) {
       message = "We admire your password length but you've hit the max of 64 characters";

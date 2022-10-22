@@ -128,9 +128,9 @@ module.exports = userController = {
         role: {
           $ne: "fan"
         }
-      })
+      });
       if (user) {
-        const result = user.populate("models");
+        const result = await user.populate("models").execPopulate(); // populate without CB function
         let models = [];
         result.models.forEach((model) => {
           let { name, _id, images, type } = model;
@@ -138,7 +138,8 @@ module.exports = userController = {
         });
         return models;
       }
-    } catch {
+    } catch(err) {
+      console.log(err)
       console.log("Could not find user's models in DB")
     }
     return null;

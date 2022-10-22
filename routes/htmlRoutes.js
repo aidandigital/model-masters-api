@@ -71,8 +71,8 @@ module.exports = function (app) {
   app.get("/html/editAccount", async (req, res) => {
     if (req.userPermissions > 1 && !req.user.guest) {
       try {
-        let { fullName, bio, email, complete, types } = await userController.getUserById(req.user._id);
-        dataRes(res, req, true, {name: fullName, bio, email, complete, types});
+        let { fullName, bio, email, complete, types, ips } = await userController.getUserById(req.user._id);
+        dataRes(res, req, true, {name: fullName, bio, email, complete, types, ips});
       } catch {
         console.log("Could not get individual user from DB (for account editor)")
         res.status(500).end();
@@ -149,11 +149,16 @@ module.exports = function (app) {
     }
   });
 
-  app.get("/html/models", async (req, res) => {
+  app.get("/html/models/:includeAbout", async (req, res) => {
+    const includeAbout = req.params.includeAbout === "true";
+
     if (req.userPermissions > 2) {
       try {
-        const data = await modelController.getModels();
-        dataRes(res, req, true, data);
+        const allModels = await modelController.getModels((includeAbout ? 3 : null));
+        fs.readFile(path.join(__dirname, "../about.txt"), 'utf8', function(err, fileData) {
+          if (err) return res.status(500).end();
+          dataRes(res, req, true, {about: fileData, models: allModels})
+        });
       } catch {
         console.log("Could not get all models from DB")
         res.status(500).end();
@@ -163,6 +168,7 @@ module.exports = function (app) {
     }
   });
 
+  /*
   app.get("/html/about", (req, res) => {
     if (req.userPermissions > 2) {
       fs.readFile(path.join(__dirname, "../about.txt"), 'utf8', function(err, data) {
@@ -173,8 +179,9 @@ module.exports = function (app) {
       dataRes(res, req, false, null);
     }
   });
+  */
 
-  app.get("/html/reportIssue", (req, res) => {
+  app.get("/html/justUserInfo", (req, res) => { // used for pages like "report an issue" that don't have any dynamic content
     if (req.userPermissions > 1) {
       dataRes(res, req, true, {})
     } else {

@@ -305,5 +305,5 @@ module.exports = function (app) {
         }
       });
     }
-  })
+  });
 };

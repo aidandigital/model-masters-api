@@ -15,6 +15,7 @@ const {
   validateOptions,
   validateEmail,
   validatePassword,
+  validatePasswordForLogin
 } = require("../validators");
 const { errorRes } = require("../formattedResponses");
 
@@ -78,7 +79,7 @@ module.exports = function (app) {
         fullName: validateText(name, "name", errors),
         firstName: null,
         email: validateEmail(email, "email", errors),
-        password: validatePassword(password, "password", errors, "register"),
+        password: validatePassword(password, "password", errors),
         ips: [req.userIP],
       };
       if (Object.keys(errors).length !== 0) {
@@ -172,6 +173,52 @@ module.exports = function (app) {
           success: true,
         });
       })
+    }
+  });
+
+  app.post("/api/updatePassword", async (req, res) => {
+    if (req.userPermissions === 0) { // If logged out
+      errorRes(res, "notloggedin")
+    } else if (req.userPermissions < 2) { // If demoted below "complete" status
+      errorRes(res, "general", errors = {general: "Your account status has changed, please refresh this page."})
+    } else {
+      let { oldPassword, newPassword } = req.body;
+      let errors = {};
+      const clean = {
+        oldPassword: validatePasswordForLogin(oldPassword),
+        newPassword: validatePassword(newPassword, "newPassword", errors),
+      }
+
+      if (!oldPassword) { // show message if password wasn't typed (not included in the sanitation method above)
+        errors.oldPassword = "This field is required";
+      }
+
+      if (Object.keys(errors).length !== 0) {
+        // If there are validation errors send them back:
+        errorRes(res, "validation", errors);
+      } else {
+        try {
+          bcrypt.compare(clean.oldPassword, req.user.password, async (err, authorized) => {
+            if (err) throw err;
+            if (authorized) {
+              // hash password
+              const hashedNewPassword = await new Promise((resolve, reject) => {
+                bcrypt.hash(clean.newPassword, 12, (err, hash) => {
+                  if (err) reject(err);
+                  resolve(hash);
+                });
+              });
+              // update account to new password
+              await userController.updateUser(req.user._id, {password: hashedNewPassword})
+              res.json({success: true});
+            } else {
+              errorRes(res, "validation", errors = {oldPassword: "Incorrect password"})
+            }
+          });
+        } catch {
+          res.status(500).end();
+        }
+      }
     }
   });
 };
