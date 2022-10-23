@@ -58,7 +58,7 @@ module.exports = userController = {
 
   addUserIP: async (_id, ip) => {
     const user = await db.User.findById(_id);
-    if (user.ips.includes(ip)) {
+    if (user.ips.includes(ip) || user.hideIP) {
       return; // IP array already contains this IP, do nothing
     } else {
       user.ips.push(ip);

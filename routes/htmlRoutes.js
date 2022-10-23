@@ -168,19 +168,6 @@ module.exports = function (app) {
     }
   });
 
-  /*
-  app.get("/html/about", (req, res) => {
-    if (req.userPermissions > 2) {
-      fs.readFile(path.join(__dirname, "../about.txt"), 'utf8', function(err, data) {
-        if (err) return res.status(500).end();
-        dataRes(res, req, true, {about: data})
-      });
-    } else {
-      dataRes(res, req, false, null);
-    }
-  });
-  */
-
   app.get("/html/justUserInfo", (req, res) => { // used for pages like "report an issue" that don't have any dynamic content
     if (req.userPermissions > 1) {
       dataRes(res, req, true, {})

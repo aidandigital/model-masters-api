@@ -52,6 +52,9 @@ const User = new Schema({
       type: String,
     },
   ],
+  hideIP: {
+    type: Boolean,
+  },
   models: [
     {
       type: Schema.Types.ObjectId, ref: 'Model', required: true,
