@@ -160,9 +160,9 @@ module.exports = function (app) {
           dataRes(res, req, true, {about: fileData, models: allModels})
         });
       } catch(err) {
-        console.log(err);
-        console.log("Could not get all models from DB")
         res.status(500).end();
+        console.log("Could not get all models from DB");
+        console.log(err);
       }
     } else {
       dataRes(res, req, false, null);

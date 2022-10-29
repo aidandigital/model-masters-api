@@ -146,9 +146,10 @@ module.exports = function (app) {
         req.logout();
       }
       res.end();
-    } catch { 
+    } catch(err) {
       res.status(500).end();
       console.log("Couldn't log out user")
+      console.log(err);
     }
   });
 
