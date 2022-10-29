@@ -140,16 +140,17 @@ module.exports = function (app) {
     }
   });
 
-  app.get("/api/logout", async (req, res) => {
-    try {
-      if (req.userPermissions > 0) {
-        req.logout();
-      }
-      res.end();
-    } catch(err) {
-      res.status(500).end();
-      console.log("Couldn't log out user")
-      console.log(err);
+  app.get("/api/logout", (req, res) => {
+    if (req.userPermissions > 0) {
+      req.logout(function(err) {
+        if (err) {
+          res.status(500).end();
+          console.log("Couldn't log out user")
+          console.log(err);
+        } else {
+          res.end();
+        }
+      });
     }
   });
 
