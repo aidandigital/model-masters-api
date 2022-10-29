@@ -23,7 +23,7 @@ module.exports = function (app) {
   app.get("/html/user/:_id", async (req, res) => {
     try {
       let queried_id = validateId(req.params._id);
-      let authorized = req.userPermissions > 2 && !req.user.guest;
+      let authorized = req.userPermissions > 2; // must have a complete account
       if (!authorized) {
         return dataRes(res, req, false, null);
         // Stop if unauthorized
@@ -33,11 +33,11 @@ module.exports = function (app) {
         let { _id, fullName, firstName, role, email, types, bio } = user;
         if (!user) { // No user found
           dataRes(res, req, true, null, false);
-        } else if (user.pending) { // User pending
+        } else if (user.pending || user.guest) { // Queried user is pending or the guest user
           dataRes(res, req, true, null, false);
         } else {
           let data;
-          if (req.userPermissions === 6 || String(req.user._id) === String(_id)) { // Must convert to string before comparison because object ID's can be wierd
+          if (req.userPermissions === 6 || String(req.user._id) === String(_id)) { // Must convert to string before comparison because object ID's can be weird
             data = {
               _id,
               name: fullName,
@@ -69,7 +69,7 @@ module.exports = function (app) {
   });
 
   app.get("/html/editAccount", async (req, res) => {
-    if (req.userPermissions > 1 && !req.user.guest) {
+    if (req.userPermissions > 1 && !req.user.guest) { // user cannot be pending or the guest account
       try {
         let { fullName, bio, email, complete, types, ips } = await userController.getUserById(req.user._id);
         dataRes(res, req, true, {name: fullName, bio, email, complete, types, ips});

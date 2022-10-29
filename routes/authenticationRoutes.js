@@ -80,7 +80,7 @@ module.exports = function (app) {
         firstName: null,
         email: validateEmail(email, "email", errors),
         password: validatePassword(password, "password", errors),
-        ips: [req.userIP],
+        ips: [{ip: req.userIP, loginDates: [Date.now()]}],
       };
       if (Object.keys(errors).length !== 0) {
         // If there are validation errors send them back:
@@ -172,6 +172,7 @@ module.exports = function (app) {
         res.json({
           success: true,
         });
+        userController.addUserIP(GUEST_ID, req.userIP);
       })
     }
   });

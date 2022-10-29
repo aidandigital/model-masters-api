@@ -1,10 +1,14 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
+function requireForNonGuests() {
+  return !this.guest;
+}
+
 const User = new Schema({
   fullName: {
     type: String,
-    required: true,
+    required: requireForNonGuests,
   },
   firstName: {
     type: String,
@@ -13,7 +17,7 @@ const User = new Schema({
   email: {
     type: String,
     unique: true,
-    required: true,
+    required: requireForNonGuests,
   },
   bio: {
     type: String,
@@ -25,7 +29,7 @@ const User = new Schema({
   },
   password: {
     type: String,
-    required: true,
+    required: requireForNonGuests,
   },
   types: [
     {
@@ -49,7 +53,13 @@ const User = new Schema({
   },
   ips: [
     {
-      type: String,
+      _id: false,
+      ip: {
+        type: String,
+      },
+      loginDates: [
+        {type: Date}
+      ],
     },
   ],
   hideIP: {

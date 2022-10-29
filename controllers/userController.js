@@ -58,16 +58,23 @@ module.exports = userController = {
 
   addUserIP: async (_id, ip) => {
     const user = await db.User.findById(_id);
-    if (user.ips.includes(ip) || user.hideIP) {
-      return; // IP array already contains this IP, do nothing
+
+    if (user.hideIP) { // administrator use only flag
+      return; // do nothing
     } else {
-      user.ips.push(ip);
+      const index = user.ips.findIndex(item => item.ip === ip);
+      if (index === -1) { // IP is new
+        user.ips.push({ip: ip, loginDates: [Date.now()]});
+      } else { // IP is not new
+        user.ips[index].loginDates.push(Date.now());
+      }
       user.save();
     }
   },
 
   changeUserRole: async (_id, type) => {
     let user = await db.User.findById(_id);
+
     if (!user) {
       return "Cannot find user";
     }
@@ -92,12 +99,15 @@ module.exports = userController = {
 
   changeUserPending: async (_id) => {
     let user = await db.User.findById(_id);
+
     if (!user) {
       return null;
     }
+
     await db.User.findByIdAndUpdate(_id, {
       pending: !user.pending,
     });
+
     if (user.pending) {
       return "approved";
     } else {
@@ -139,7 +149,6 @@ module.exports = userController = {
         return models;
       }
     } catch(err) {
-      console.log(err)
       console.log("Could not find user's models in DB")
     }
     return null;
