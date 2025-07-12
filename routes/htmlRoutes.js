@@ -1,5 +1,4 @@
-const { ObjectId } = require('mongodb');
-const { dataRes, errorRes } = require("../formattedResponses");
+const { dataRes, } = require("../formattedResponses");
 const { userController, modelController } = require("../controllers/index.js");
 const { validateId } = require("../validators");
 const path = require("path")
@@ -307,21 +306,27 @@ module.exports = function (app) {
     }
   });
 
-  app.get("/html/deleteModel/:model_id_delete", (req, res) => {
-    const model_id = validateId(req.params.model_id);
+  app.get("/html/deleteModel/:model_id_delete", async (req, res) => {
+    const model_id = validateId(req.params.model_id_delete);
 
-    const model = modelController.getModelById(model_id);
+    try {
+      const model = await modelController.getModelById(model_id);
 
-    if (!model) {
-      // Not found:
-      return dataRes(res, req, true, null, false);
-    }
+      if (!model) {
+        // Not found:
+        return dataRes(res, req, true, null, false);
+      }
 
-    if (req.userPermissions < 4 || model.user._id.toString() !== req.user._id.toString()) {
-      dataRes(res, req, false, null);
+      if (req.userPermissions < 4 || model.user._id.toString() !== req.user._id.toString()) {
+        dataRes(res, req, false, null);
 
-    } else {
-      dataRes(res, req, true, {model_id: model_id});
+      } else {
+        dataRes(res, req, true, {model_id: model_id});
+      }
+
+    } catch(err) {
+      console.log("Could not get individual model from DB (for delete): ", err);
+      res.status(500).end();
     }
   });
 

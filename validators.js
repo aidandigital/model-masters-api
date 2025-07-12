@@ -1,8 +1,7 @@
 const mongoose = require("mongoose");
 
 // Validation:
-const textRgx = /([^A-z0-9~"'!@#$%^&*()_+={}[\]|\\:;,.?/-\s])+/g;
-const paragraphRgx = /([^A-z0-9~"'!@#$%^&*()_+={}[\]|\\:;,.?/-\s])+/g;
+const injectionRgx = /<[^>]*(script|style|iframe|object|embed|link)|on\w+\s*=|javascript:|data:/gi;
 
 // Checkers: makes sure email is an email and password is strong
 const emailCheck =
@@ -25,7 +24,7 @@ module.exports = {
     let message;
     text = text.trim();
 
-    if (text.match(textRgx) || text.match("<") || typeof text !== "string") {
+    if (typeof text !== "string" || injectionRgx.test(text)) {
       message = "Only words, numbers, and necessary punctuation are allowed here";
     }
     if (text.length > max) {
@@ -54,7 +53,7 @@ module.exports = {
     let message;
     text = text.trim();
 
-    if (text.match(paragraphRgx) || typeof text !== "string") {
+    if (typeof text !== "string" || injectionRgx.test(text)) {
       message = "Only words, numbers, and necessary punctuation are allowed here";
     }
     if (text.length > 10000) {

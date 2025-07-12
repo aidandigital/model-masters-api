@@ -1,5 +1,4 @@
 // Dependencies
-const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs"); // Use bcryptjs instead of bcrypt because the latter has issues running on AWS Lambda
 require("dotenv").config();
 const transporter = require("../transporter");
@@ -283,7 +282,7 @@ module.exports = function (app) {
         completionYear: validateNumber(completionYear, 1940, maxYear, "completionYear", errors),
         imageKeys: null,
         thumbnailKey: null,
-        facts: validateParagraph(facts, "facts", errors, required = false).split("\n").filter(fact => fact.trim() !== ""),
+        facts: validateParagraph(facts, "facts", errors, required = false) ? validateParagraph(facts, "facts", errors, required = false).split("\n").filter(fact => fact.trim() !== "") : null,
         user: user_id,
         imageFolderId: null, // Will be validated later by the fact that the folder must be found in S3.
       }
@@ -404,7 +403,7 @@ module.exports = function (app) {
         completionYear: validateNumber(completionYear, 1940, maxYear, "completionYear", errors),
         imageKeys: null,
         thumbnailKey: null,
-        facts: validateParagraph(facts, "facts", errors, required = false).split("\n").filter(fact => fact.trim() !== ""),
+        facts: validateParagraph(facts, "facts", errors, required = false) ? validateParagraph(facts, "facts", errors, required = false).split("\n").filter(fact => fact.trim() !== "") : null,
         user: user_id,
         imageFolderId: null, // Will be validated later by the fact that the folder must be found in S3.
       }
