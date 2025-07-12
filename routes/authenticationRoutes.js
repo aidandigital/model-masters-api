@@ -1,10 +1,12 @@
 // Dependencies
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs"); // Use bcryptjs instead of bcrypt because the latter has issues running on AWS Lambda
 const passport = require("passport");
 const transporter = require("../transporter");
 require("dotenv").config();
+const{ successRes } = require("../formattedResponses");
 
-const GUEST_ID = process.env.GUEST_ID;
+const ALLOW_GUEST_LOGIN = process.env.ALLOW_GUEST_LOGIN === "true";
+const GUEST_ID = ALLOW_GUEST_LOGIN ? process.env.GUEST_ID : null;
 
 // Controllers
 const { userController } = require("../controllers/index.js");
@@ -155,35 +157,46 @@ module.exports = function (app) {
   });
 
   app.post("/api/loginAsGuest", (req, res) => {
+    if (!ALLOW_GUEST_LOGIN) {
+      return errorRes(res, "authorization", "Guest login is not allowed at this time");
+    }
+
     if (req.user) {
-      // No signing up if logged in already
+      // No signing up if logged in already:
       return errorRes(
         res,
         "authorization",
         "You are already logged in. Log out first to make a new account"
       );
+
     } else {
       const guest = {
         _id: GUEST_ID
       };
+
       req.login(guest, function (err) {
         if (err) {
           console.log("Couldn't log in user as guest")
           return res.status(500).end();
         }
-        res.json({
-          success: true,
-        });
+        
+        successRes(res);
+
         userController.addUserIP(GUEST_ID, req.userIP);
-      })
+      });
     }
   });
 
-  app.post("/api/updatePassword", async (req, res) => {
-    if (req.userPermissions === 0) { // If logged out
-      errorRes(res, "notloggedin")
-    } else if (req.userPermissions < 2) { // If demoted below "complete" status
-      errorRes(res, "general", errors = {general: "Your account status has changed, please refresh this page."})
+  app.post("/api/editPassword", async (req, res) => {
+    if (req.userPermissions === 0) { // If logged out:
+      errorRes(res, "notloggedin");
+    
+    } else if (req.user.guest) { // If using a guest account:
+      errorRes(res, "authorization", "You cannot change the password of a guest account");
+
+    } else if (req.userPermissions < 2) { // If demoted below "complete" status:
+      errorRes(res, "general", errors = {general: "Your account status has changed, please refresh this page"});
+
     } else {
       let { oldPassword, newPassword } = req.body;
       let errors = {};

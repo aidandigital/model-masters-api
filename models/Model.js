@@ -27,18 +27,22 @@ const Model = new Schema({
     type: String,
     required: true,
   },
-  images: [
+  imageFolderId: {
+    type: String,
+    required: true,
+  },
+  imageKeys: [
     {
       type: String,
-      required: true,
     }
   ],
+  thumbnailKey: {
+    type: String,
+    required: true,
+  },
   creationDate: {
     type: Date,
     default: Date.now,
-  },
-  deletedAt: {
-    type: Date,
   },
   user: {
     type: Schema.Types.ObjectId, ref: 'User', required: true,

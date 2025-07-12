@@ -1,19 +1,30 @@
 module.exports = {
-  errorRes: (res, errType, message = "An error occurred") => {
-    // For API/submission errors
-    // For validation errors, "error" is an object of errors
+  // For API route errors:
+  errorRes: (res, errType, message = "An error occurred, please try again later") => {
+    // For validation errors, "error" is an object of errors.
     let response = {
       success: false,
       errType: errType,
-      message: message, // * or messages object
+      message: message, // or messages object.
     };
-    // Valid errTypes (For handling on the front end): validation, authorization, general, notloggedin
+    // Valid errTypes (For handling on the front end): validation, authorization, general, notloggedin.
     res.json(response);
   },
-  // Because API success responses are so lightweight I have not included them here
 
+  // For API route success responses:
+  successRes: (res, data = null) => {
+    res.json({
+      success: true,
+      // API route success responses are very lightweight since they usually don't include data.
+      data: data,
+    });
+  },
+
+  // Because API route success responses are so lightweight (they usually don't include data) I have not included them here.
+  // They just look like: res.json({ success: true });
+
+  // For HTML route responses:
   dataRes: (res, req, authorized, data, found = true) => {
-    // For getting html/data
     if (authorized) {
       res.json({
         currentUser: {

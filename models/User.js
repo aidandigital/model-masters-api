@@ -5,6 +5,8 @@ function requireForNonGuests() {
   return !this.guest;
 }
 
+const DEFAULT_PENDING_VALUE = process.env.DEFAULT_PENDING_VALUE === "true";
+
 const User = new Schema({
   fullName: {
     type: String,
@@ -38,7 +40,7 @@ const User = new Schema({
   ],
   pending: {
     type: Boolean,
-    default: false,
+    default: DEFAULT_PENDING_VALUE,
   },
   complete: {
     type: Boolean,

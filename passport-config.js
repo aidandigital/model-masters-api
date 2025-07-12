@@ -1,5 +1,5 @@
 const LocalStrategy = require("passport-local").Strategy;
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs"); // Use bcryptjs instead of bcrypt because the latter has issues running on AWS Lambda
 const {
   validatePasswordForLogin,
   validateEmailForLogin,

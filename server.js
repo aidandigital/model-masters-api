@@ -8,6 +8,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const cookieParser = require("cookie-parser");
 const helmet = require("helmet");
 const cors = require("cors");
+const serverless = require("serverless-http");
 require("dotenv").config();
 
 const app = express();
@@ -24,7 +25,8 @@ app.use(cors({
   origin: CLIENT_URL,
   optionsSuccessStatus: 200, // some legacy browsers (IE11, some SmartTVs) won't work with 204
   credentials: true,
-  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept']
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept'],
+  methods: ['OPTIONS', 'GET', 'POST']
 }));
 app.use(helmet());
 app.use(express.urlencoded({ extended: true }));
@@ -34,7 +36,10 @@ app.use(mongoSanitize());
 app.enable('trust proxy');
 app.use(
   session({
-    store: MongoStore.create({ mongoUrl: DB_STRING }),
+    store: MongoStore.create({
+      mongoUrl: DB_STRING,
+      collectionName: "sessions",
+    }),
     name: "user",
     secret: SESSION_SECRET,
     saveUninitialized: true,
@@ -87,26 +92,15 @@ app.use((req, res, next) => {
 });
 
 // DB CONNECT
-mongoose.connect(
-  DB_STRING,
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-  },
-  function (err) {
-    if (!err) {
-      console.log("DB connected");
-    } else {
-      console.log(err);
-    }
-  }
-);
+mongoose.connect(DB_STRING);
 
 // ROUTES
 require("./routes/authenticationRoutes")(app);
 require("./routes/apiRoutes")(app);
 require("./routes/htmlRoutes")(app);
 
+// LISTEN
 app.listen(PORT, () => console.log("Listening on PORT " + PORT));
+
+// EXPORT (for serverless)
+module.exports.handler = serverless(app);

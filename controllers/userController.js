@@ -135,22 +135,23 @@ module.exports = userController = {
       const user = await db.User.findOne({
         _id: _id,
         pending: false,
-        role: {
-          $ne: "fan"
-        }
+        role: { $ne: "fan" },
       });
+
       if (user) {
-        const result = await user.populate("models").execPopulate(); // populate without CB function
-        let models = [];
-        result.models.forEach((model) => {
-          let { name, _id, images, type } = model;
-          models.push({name, _id, thumbnail: images[0], type});
+        await user.populate("models");
+
+        const models = user.models.map((model) => {
+          const { name, _id, thumbnailKey, type } = model;
+          return { name: name, _id: _id, thumbnailKey: thumbnailKey, type: type };
         });
+
         return models;
       }
-    } catch(err) {
-      console.log("Could not find user's models in DB")
+    } catch (err) {
+      console.log("Could not find user's models in DB: ", err);
     }
+
     return null;
   },
 };

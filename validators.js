@@ -1,8 +1,7 @@
 const mongoose = require("mongoose");
 
 // Validation:
-const textRgx = /([^A-z0-9~"'!@#$%^&*()_+={}[\]|\\:;,.?/-\s])+/g;
-const paragraphRgx = /([^A-z0-9~"'!@#$%^&*()_+={}[\]|\\:;,.?/-\s])+/g;
+const injectionRgx = /<[^>]*(script|style|iframe|object|embed|link)|on\w+\s*=|javascript:|data:/gi;
 
 // Checkers: makes sure email is an email and password is strong
 const emailCheck =
@@ -15,7 +14,7 @@ const maxPasswordLength = 64; // bcrypt has a max length of 72 but we'll stop at
 
 module.exports = {
   // Input Validation with specific Error Messages:
-  validateText: (text, name = "text" /* What the error should be called in the error object */, errors = {}, max = 80) => {
+  validateText: (text, name = "text" /* What the error should be called in the error object */, errors = {}, max = 100) => {
     if (!text) {
       errors[name] = "This field is required";
       // If field doesn't exist we can't do the following checks, so return here and be done
@@ -25,11 +24,11 @@ module.exports = {
     let message;
     text = text.trim();
 
-    if (text.match(textRgx) || text.match("<") || typeof text !== "string") {
-      message = "Sorry, only words, numbers, and necessary puncuation is allowed here";
+    if (typeof text !== "string" || injectionRgx.test(text)) {
+      message = "Only words, numbers, and necessary punctuation are allowed here";
     }
     if (text.length > max) {
-      message = "This field is too long";
+      message = "This field is too long, please enter less than " + max + " characters";
     }
     if (text.length < 3) {
       message = "This field is too short";
@@ -38,6 +37,7 @@ module.exports = {
     if (message) {
       errors[name] = message;
       return null;
+
     } else {
       return text;
     }
@@ -53,11 +53,11 @@ module.exports = {
     let message;
     text = text.trim();
 
-    if (text.match(paragraphRgx) || typeof text !== "string") {
-      message = "Sorry, only words, numbers, and necessary puncuation is allowed here";
+    if (typeof text !== "string" || injectionRgx.test(text)) {
+      message = "Only words, numbers, and necessary punctuation are allowed here";
     }
-    if (text.length > 1000) {
-      message = "This field is too long";
+    if (text.length > 10000) {
+      message = "This field is too long, please enter less than 10,000 characters";
     }
     if (text.length < 20 && required) {
       message = "Enter at least 20 characters";
@@ -99,7 +99,7 @@ module.exports = {
     if (optionsArr.includes(selectedOption)) {
       return selectedOption;
     } else {
-      errors[name] = "Nice try, but that option isn't available to you";
+      errors[name] = "Please select a valid option";
       return null;
     }
   },

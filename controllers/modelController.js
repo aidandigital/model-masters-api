@@ -1,25 +1,23 @@
 const db = require("../models");
-const mongoose = require("mongoose")
 
 module.exports = {
   addModel: async (model, user_id) => {
-    try {
-      let newModel = await db.Model.create(model);
-      await db.User.findByIdAndUpdate(user_id, {
-        $push: { models: newModel._id },
-      });
-      return newModel._id;
-    } catch {
-      return false;
-    }
+    let newModel = await db.Model.create(model);
+
+    await db.User.findByIdAndUpdate(user_id, {
+      $push: { models: newModel._id },
+    });
+
+    return newModel;
   },
+
+  updateModel: (_id, updatedFieldsObj) => db.Model.findByIdAndUpdate(_id, updatedFieldsObj),
 
   getModelById: async (_id) => {
     try {
-      let model = await db.Model.findById(_id).populate("user");
-      return model;
-    } catch {
-      return false;
+      return db.Model.findById(_id).populate("user");
+    } catch (err) {
+      return false; // Not found
     }
   },
 
@@ -33,9 +31,7 @@ module.exports = {
             _id: { $toObjectId: "$_id" }, // Must convert to object id for comparison below
             name: 1,
             type: 1,
-            thumbnail: {
-                $arrayElemAt: ["$images", 0] // Get first element in images array, assign to "image" field in resultant
-            },
+            thumbnailKey: 1
         }
     },
     {
@@ -46,7 +42,7 @@ module.exports = {
                 {
                     $match: {
                         $expr: { // Accesses fields of the collection in question (users), we are accessing the "models" field
-                            $in: ["$$model_id", "$models"] // See if the model id is in the "models" array
+                            $in: ["$$model_id", "$models"] // See if the model _id is in the "models" array
                         }
                     }
                 }
@@ -74,7 +70,7 @@ module.exports = {
             _id: 1,
             name: 1,
             type: 1,
-            thumbnail: 1,
+            thumbnailKey: 1,
             user: {
               name: "$user.firstName",
               _id: 1,
